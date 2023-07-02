@@ -1,3 +1,4 @@
+var initialRadius;
 var radius;
 
 var control;
@@ -41,9 +42,6 @@ var anchor6Y;
 
 var incremento = 0;
 
-var cosseno = 0;
-var seno = 0;
-
 var tetax;
 var tetay;
 
@@ -56,7 +54,8 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(60);
 
-  radius = 100;
+  initialRadius = 100;
+  radius = initialRadius;
   control = radius * 0.551915024494;
 
   anchor0X = width / 2 - radius;
@@ -89,47 +88,44 @@ function setup() {
 function draw() {
   background(255);
 
-  // line(0, height / 2, width, height / 2);  
+  line(0, height / 2, width, height / 2);  
 
   // showHandles();
 
-  // if (stage == 0)
-  // {
-  //   atualizaCirculo(1);
-  //   desenharCirculo(0, 0);
-  // } else if (stage == 1) {
-  //   atualizarPontos();
-  //   desenharBezier();
-  //   radiuscontrol = 500;
-  //   ycontrol = 198;
-  // } else {
-  //   background(0);
-  //   anchor2Y = (height / 2) + radius;
-  //   height_correction = 0;
-  //   tetax = PI;
-  //   atualizaCirculo(-1);
-  //   desenharCirculo(255, height / 2);
-  // }
+  if (stage == 0)
+  {
+    atualizaCirculo(1);
+    desenharCirculo(0, 0);
+  } else if (stage == 1) {
+    atualizarPontos();
+    desenharBezier();
+  } else {
+    background(255);
+    atualizaCirculo(-1);
+    desenharCirculo(255, initialRadius * 2);
+  }
 
-  atualizarPontos();
-  desenharBezier();
-  radiuscontrol = 500;
-  ycontrol = 320;
-  atualizaCirculo(1);
-  desenharCirculo(255, 0);
+  ycontrol += (initialRadius / (60*1));
+
+  // atualizarPontos();
+  // desenharBezier();
+  // radiuscontrol = 0;
+  // // ycontrol = initialRadius;
+  // atualizaCirculo(0);
+  // desenharCirculo(255, 1);
   
-  cosseno += PI/(60*60);
-  seno += 2/(60*60);
+
+  // stage = 0;
 }
 
 function atualizarPontos() {
-  tetax = (PI * 1) + HALF_PI;
+  // tetax = (PI * 0) + HALF_PI;
 
-  var _incremento = 250
+  var _incremento = 500/(60*1);
 
   radius = 100 + _incremento;
 
-  var height_correction = 380 - (sin(tetax) * (60));
+  var height_correction = ycontrol;
 
   control = radius * 0.551915024494;
 
@@ -163,12 +159,14 @@ function atualizarPontos() {
   anchor4X = width;
   anchor4Y = 0;
 
-  // tetax += TWO_PI/(60*2.5);
+  tetax += TWO_PI/(60*2.5);
   tetay += TWO_PI/(60*2.5);
 
   if (tetax >= PI + HALF_PI)
   {
-    stage = 2;
+    // stage = 2;
+    tetax = PI + HALF_PI;
+    ycontrol
   }
 }
 
@@ -214,9 +212,9 @@ function showHandles() {
 }
 
 function atualizaCirculo(_sine) {
-  ycontrol += 320/(60*1);
-  radiuscontrol += (500 / (60*1)) * _sine;
-  if (ycontrol >= 320)
+  // ycontrol += (initialRadius / (60*1));
+  radiuscontrol += (0 / (60*1)) * _sine;
+  if (ycontrol >= initialRadius/2)
   {
     stage = 1;
   }
