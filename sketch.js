@@ -1,7 +1,9 @@
+let frame_rate_value;
+
 var initialRadius;
 var radius;
 
-var control;
+var HandleDistance;
 
 var anchor0X;
 var anchor0Y;
@@ -30,33 +32,25 @@ var anchor4Y_control1;
 var anchor4X_control2;
 var anchor4Y_control2;
 
-var anchor5X;
-var anchor5Y;
-var anchor5X_control1;
-var anchor5Y_control1;
-var anchor5X_control2;
-var anchor5Y_control2;
-
-var anchor6X;
-var anchor6Y;
-
 var incremento = 0;
 
-var tetax;
-var tetay;
+var teta;
 
-var ycontrol = 0;
-var radiuscontrol = 0;
+var heightControl = 0;
+var radiusControl = 0;
 
-var stage = 0;
+let animation_Cicle_Duration_In_Seconds;
+let animation_Cicle_Duration_In_Frames;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  frameRate(60);
+
+  frame_rate_value = 60;
+  frameRate(frame_rate_value);
 
   initialRadius = 100;
   radius = initialRadius;
-  control = radius * 0.551915024494;
+  HandleDistance = radius * 0.551915024494
 
   anchor0X = width / 2 - radius;
   anchor0Y = height / 2;
@@ -67,106 +61,87 @@ function setup() {
   anchor2X = width / 2;
   anchor2Y = height / 2 + radius;
   anchor2X_control1 = width / 2 -radius;
-  anchor2Y_control1 = height / 2 + control;
-  anchor2X_control2 = width / 2 - control;
+  anchor2Y_control1 = height / 2 + HandleDistance;
+  anchor2X_control2 = width / 2 - HandleDistance;
   anchor2Y_control2 = height / 2 + radius;
 
   anchor3X = width / 2 + radius;
   anchor3Y = height / 2;
-  anchor3X_control1 = width / 2 + control;
+  anchor3X_control1 = width / 2 + HandleDistance;
   anchor3Y_control1 = height / 2 + radius;
   anchor3X_control2 = width / 2 + radius;
-  anchor3Y_control2 = height / 2 + control;
+  anchor3Y_control2 = height / 2 + HandleDistance;
 
   anchor4X = width / 2 + radius;
   anchor4Y = height / 2;
 
-  tetax = HALF_PI;
-  tetay = HALF_PI;
+  teta = HALF_PI;
+
+  animation_Cicle_Duration_In_Seconds = 3;
+  animation_Cicle_Duration_In_Frames = frame_rate_value * animation_Cicle_Duration_In_Seconds;
+
 }
 
 function draw() {
   background(255);
 
-  line(0, height / 2, width, height / 2);  
+  line(0, height / 2, width, height / 2);
+  line(0, height / 2 + radius, width, height / 2 + radius);
+  line(0, height / 2 + (radius * 2), width, height / 2 + (radius * 2));
+  line(width / 2 - (radius), 0, width / 2 - (radius), height);
 
-  // showHandles();
-
-  if (stage == 0)
+  if (frameCount % animation_Cicle_Duration_In_Frames <= animation_Cicle_Duration_In_Frames / 3)
   {
-    atualizaCirculo(1);
-    desenharCirculo(0, 0);
-  } else if (stage == 1) {
+    teta = HALF_PI;
+
+    drawCircle(0);
+  } else if (frameCount % animation_Cicle_Duration_In_Frames <= (animation_Cicle_Duration_In_Frames / 3) * 2) {
     atualizarPontos();
     desenharBezier();
   } else {
-    background(255);
-    atualizaCirculo(-1);
-    desenharCirculo(255, initialRadius * 2);
+    background(0);
+
+    drawCircle(255);
   }
 
-  ycontrol += (initialRadius / (60*1));
+  // showHandles();
 
-  // atualizarPontos();
-  // desenharBezier();
-  // radiuscontrol = 0;
-  // // ycontrol = initialRadius;
-  // atualizaCirculo(0);
-  // desenharCirculo(255, 1);
-  
-
-  // stage = 0;
+  if(mouseX > width / 2)
+  {
+    showHandles();
+  }
+  noLoop();
 }
 
 function atualizarPontos() {
-  // tetax = (PI * 0) + HALF_PI;
-
-  var _incremento = 500/(60*1);
-
-  radius = 100 + _incremento;
-
-  var height_correction = ycontrol;
-
-  control = radius * 0.551915024494;
-
-  var sine  = 1;
-  
-  if (cos(tetax) < 0)
-  {
-    sine = -1;
-  }
+  HandleDistance = radius * 0.551915024494;
 
   anchor0X = 0;
   anchor0Y = 0;
 
-  anchor1X = (width / 2) - radius - ((cos(tetax) * ((HALF_PI / 2) * radius)) * sine);
-  anchor1Y = (height / 2) + radius - (sin(tetax) * (radius)) - height_correction;
+  anchor1X = (width / 2) - radius + (cos(teta) * ((HALF_PI / 2) * radius));
+  anchor1Y = (height / 2) + radius - (sin(teta) * (radius));
 
   anchor2X = (width / 2);
-  anchor2Y = (height / 2) + radius - height_correction;
-  anchor2X_control1 = (width / 2) - radius - ((cos(tetax) * (1)) * sine);
-  anchor2Y_control1 = (height / 2) + radius - (sin(tetax) * (radius - control)) - height_correction;
-  anchor2X_control2 = (width / 2) - control;
-  anchor2Y_control2 = (height / 2) + radius - height_correction;
+  anchor2Y = (height / 2) + radius;
+  anchor2X_control1 = (width / 2) - radius + (cos(teta) * (1));
+  anchor2Y_control1 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance));
+  anchor2X_control2 = (width / 2) - HandleDistance;
+  anchor2Y_control2 = (height / 2) + radius;
 
-  anchor3X = (width / 2) + radius + ((cos(tetax) * ((HALF_PI / 2) * radius)) * sine);
-  anchor3Y = (height / 2) + radius - (sin(tetax) * (radius)) - height_correction;
-  anchor3X_control1 = (width / 2) + control;
-  anchor3Y_control1 = (height / 2) + radius - height_correction;
-  anchor3X_control2 = (width / 2) + radius - ((cos(tetax) * (1)) * sine);
-  anchor3Y_control2 = (height / 2) + radius - (sin(tetax) * (radius - control)) - height_correction;
+  anchor3X = (width / 2) + radius -(cos(teta) * ((HALF_PI / 2) * radius));
+  anchor3Y = (height / 2) + radius - (sin(teta) * (radius));
+  anchor3X_control1 = (width / 2) + HandleDistance;
+  anchor3Y_control1 = (height / 2) + radius;
+  anchor3X_control2 = (width / 2) + radius + (cos(teta) * (1));
+  anchor3Y_control2 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance));
 
   anchor4X = width;
   anchor4Y = 0;
 
-  tetax += TWO_PI/(60*2.5);
-  tetay += TWO_PI/(60*2.5);
-
-  if (tetax >= PI + HALF_PI)
+  if(frameCount % animation_Cicle_Duration_In_Frames <= (animation_Cicle_Duration_In_Frames / 3) * 2 || frameCount >= animation_Cicle_Duration_In_Frames)
   {
-    // stage = 2;
-    tetax = PI + HALF_PI;
-    ycontrol
+    teta += PI / (animation_Cicle_Duration_In_Frames / 3);
   }
 }
 
@@ -211,19 +186,10 @@ function showHandles() {
   circle(anchor4X_control2, anchor4Y_control2, 10);
 }
 
-function atualizaCirculo(_sine) {
-  // ycontrol += (initialRadius / (60*1));
-  radiuscontrol += (0 / (60*1)) * _sine;
-  if (ycontrol >= initialRadius/2)
-  {
-    stage = 1;
-  }
-}
-
-function desenharCirculo(_fill, _stageMod) {
+function drawCircle(_fill) {
   push();
   fill(0,0,175,100);
-  // fill(_fill);
-  circle(width / 2, height / 2 - (ycontrol * 1) + _stageMod, 200 + (radiuscontrol * 1));
+  fill(_fill);
+  circle(width / 2, height / 2 - (heightControl * 1), radius * 2);
   pop();
 }
