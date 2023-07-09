@@ -42,6 +42,12 @@ var radiusControl = 0;
 let animation_Cicle_Duration_In_Seconds;
 let animation_Cicle_Duration_In_Frames;
 
+let frame_oddness;
+let cicle_count;
+
+let circle_color = 0;
+let background_color = 255;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
@@ -80,11 +86,12 @@ function setup() {
   animation_Cicle_Duration_In_Seconds = 3;
   animation_Cicle_Duration_In_Frames = frame_rate_value * animation_Cicle_Duration_In_Seconds;
 
+  cicle_count = 0;
+  frame_oddness = false;
 }
 
 function draw() {
-  background(255);
-
+  
   line(0, height / 2, width, height / 2);
   line(0, height / 2 + radius, width, height / 2 + radius);
   line(0, height / 2 + (radius * 2), width, height / 2 + (radius * 2));
@@ -94,23 +101,40 @@ function draw() {
   {
     teta = HALF_PI;
 
-    drawCircle(0);
+    background(background_color);
+    drawCircle(circle_color, 0);
   } else if (frameCount % animation_Cicle_Duration_In_Frames <= (animation_Cicle_Duration_In_Frames / 3) * 2) {
     atualizarPontos();
     desenharBezier();
-  } else {
-    background(0);
+  } else if (frameCount % animation_Cicle_Duration_In_Frames < animation_Cicle_Duration_In_Frames) {
+    changeColors();
+    background(background_color);
 
-    drawCircle(255);
+    drawCircle(circle_color, initialRadius * 2);
+  } else {
+    heightControl = 0;
+    cicle_count += 1;
   }
+
+  if (animationEnded())
+  {
+    heightControl = 0;
+    cicle_count += 1;
+  }
+
+  heightControl += 1;
+
+  // atualizarPontos();
+  // desenharBezier();
+  // drawCircle(255, initialRadius * 2);
 
   // showHandles();
 
   if(mouseX > width / 2)
   {
     showHandles();
+    heightControl = mouseY - (height / 2);
   }
-  noLoop();
 }
 
 function atualizarPontos() {
@@ -120,21 +144,21 @@ function atualizarPontos() {
   anchor0Y = 0;
 
   anchor1X = (width / 2) - radius + (cos(teta) * ((HALF_PI / 2) * radius));
-  anchor1Y = (height / 2) + radius - (sin(teta) * (radius));
+  anchor1Y = (height / 2) + radius - (sin(teta) * (radius)) - heightControl;
 
   anchor2X = (width / 2);
-  anchor2Y = (height / 2) + radius;
+  anchor2Y = (height / 2) + radius - heightControl;
   anchor2X_control1 = (width / 2) - radius + (cos(teta) * (1));
-  anchor2Y_control1 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance));
+  anchor2Y_control1 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance)) - heightControl;
   anchor2X_control2 = (width / 2) - HandleDistance;
-  anchor2Y_control2 = (height / 2) + radius;
+  anchor2Y_control2 = (height / 2) + radius - heightControl;
 
   anchor3X = (width / 2) + radius -(cos(teta) * ((HALF_PI / 2) * radius));
-  anchor3Y = (height / 2) + radius - (sin(teta) * (radius));
+  anchor3Y = (height / 2) + radius - (sin(teta) * (radius))  - heightControl;
   anchor3X_control1 = (width / 2) + HandleDistance;
-  anchor3Y_control1 = (height / 2) + radius;
+  anchor3Y_control1 = (height / 2) + radius - heightControl;
   anchor3X_control2 = (width / 2) + radius + (cos(teta) * (1));
-  anchor3Y_control2 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance));
+  anchor3Y_control2 = (height / 2) + radius - (sin(teta) * (radius - HandleDistance)) - heightControl;
 
   anchor4X = width;
   anchor4Y = 0;
@@ -186,10 +210,30 @@ function showHandles() {
   circle(anchor4X_control2, anchor4Y_control2, 10);
 }
 
-function drawCircle(_fill) {
+function drawCircle(_fill, _height_deslocation) {
   push();
   fill(0,0,175,100);
   fill(_fill);
-  circle(width / 2, height / 2 - (heightControl * 1), radius * 2);
+  circle(width / 2, height / 2 - (heightControl * 1) + _height_deslocation, radius * 2);
   pop();
+}
+
+function changeColors() {
+  if (cicle_count % 2 == 0)
+  {
+    background_color = 0;
+    circle_color = 255;
+  } else  {
+    background_color = 255;
+    circle_color = 0;
+  }
+}
+
+//função que detecta se o ciclo de animação acabou
+function animationEnded() {
+  if (frameCount >= animation_Cicle_Duration_In_Frames * 2) {
+    return true;
+  } else {
+    return false;
+  }
 }
