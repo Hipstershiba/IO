@@ -80,8 +80,8 @@ function setup() {
 
   theta = HALF_PI;
 
-  heightControl = -radius;
-  radiusControl = 0;
+  heightControl = -radius * 4.15;
+  radiusControl = width/1.5;
 
   animation_Cicle_Duration_In_Seconds = 3;
   animation_Cicle_Duration_In_Frames = frame_rate_value * animation_Cicle_Duration_In_Seconds;
@@ -93,7 +93,7 @@ function setup() {
 function draw() {
   
   if (animation_cicle_ended()) {
-    // noLoop();
+    noLoop();
     theta = HALF_PI;
     cicle_count += 1;
     reinicia_altura();
@@ -102,10 +102,6 @@ function draw() {
   background(atualiza_cor_de_fundo());
   fill(atualiza_cor_do_circulo());
 
-  atualiza_altura();
-  atualiza_raio();
-  // radius = radiusControl;
-
   if (frameCount % animation_Cicle_Duration_In_Frames <= (animation_Cicle_Duration_In_Frames / 3) * 2)
   {
     drawCircle(0);
@@ -113,6 +109,10 @@ function draw() {
     atualizarPontos();
     desenharBezier();
   }
+
+  atualiza_altura();
+  atualiza_raio();
+  radius = radiusControl;
 
   if(mouseX > width / 2)
   {
@@ -204,7 +204,7 @@ function showHandles() {
 }
 
 function drawCircle() {
-  circle(width / 2, height / 2 - (heightControl * 1), radius * 2);
+  circle(width / 2, height / 2 - heightControl, radius * 2);
 }
 
 function atualiza_cor_de_fundo() {
@@ -234,19 +234,7 @@ function animation_cicle_ended() {
 }
 
 function atualiza_raio() {
-  if (frameCount % animation_Cicle_Duration_In_Frames > animation_Cicle_Duration_In_Frames / 2) {
-    decreaseRadius();
-  } else {
-    increaseRadius();
-  }
-}
-
-function increaseRadius() {
-  radiusControl += (width / 2) / (animation_Cicle_Duration_In_Frames / 3) * 2;
-}
-
-function decreaseRadius() {
-  radiusControl -= (width / 2) / (animation_Cicle_Duration_In_Frames / 3) * 2;
+  radiusControl = map((animation_Cicle_Duration_In_Frames / 3) * 2, 0, animation_Cicle_Duration_In_Frames, 0, radius);
 }
 
 function atualiza_altura() {
